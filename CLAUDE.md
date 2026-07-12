@@ -164,9 +164,17 @@ debug+release) → `dev.cherrypizza.mjlaunch...` (иначе INSTALL_FAILED_CONF
 Проверено: чистая установка → старт без окна выбора → аккаунт `android_802387` (authType local,
 accessToken "0", валидный profileId).
 
+**Дефолтные настройки игры (options.txt) — СДЕЛАНО (12.07.2026):** статичные значения прописаны в
+`assets/options.txt` (renderDistance:8, entityDistanceScaling:5.0, darkMojangStudiosBackground:true,
+enableVsync:true, chatLinksPrompt:false, skipMultiplayerWarning:true; раскатка overwrite=false —
+только первый запуск). `lang` — динамически: `AsyncAssetManager.extractDefaultSettings` при первом
+запуске (когда options.txt только что скопирован) вызывает `MCOptionUtils.set("lang", <язык
+устройства>)` + save; код языка = `Locale.getDefault()` → `ll_cc` lowercase (метод
+`deviceMinecraftLang()`). Проверено на устройстве (ru-RU → `lang:ru_ru`), все значения применяются.
+
 **Осталось:**
 1. Вариант А — причесать first-run (разрешения/instance) до «одной кнопки». Основное (offline-авто,
-   автозаход, сборка) уже готово.
+   автозаход, сборка, настройки) уже готово.
 2. Возможные хвосты: финальное ревью правок ветки, git-коммиты, релизная подпись.
 
 ## Прочее

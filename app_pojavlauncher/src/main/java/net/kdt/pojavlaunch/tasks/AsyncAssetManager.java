@@ -12,6 +12,7 @@ import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
+import net.kdt.pojavlaunch.utils.MCOptionUtils;
 
 import git.artdeell.mojo.BuildConfig;
 
@@ -156,7 +157,14 @@ public class AsyncAssetManager {
     public static void extractDefaultSettings(Context context, File gamedir)  {
         try {
             String gameDirPath = gamedir.getAbsolutePath();
+            boolean freshOptions = !new File(gamedir, "options.txt").exists();
             Tools.copyAssetFile(context, "options.txt", gameDirPath, false);
+            // cm2android: on first run, set the Minecraft language to the device language
+            if (freshOptions) {
+                MCOptionUtils.load(gameDirPath);
+                MCOptionUtils.set("lang", deviceMinecraftLang());
+                MCOptionUtils.save();
+            }
             // cm2android: unpack bundled server list + mods into the ACTUAL game directory
             // (instance.getGameDirectory(); for sharedData instances this is shared_dir, NOT .minecraft).
             // The game reads mods/ and servers.dat from --gameDir, so they must land here.
@@ -170,5 +178,14 @@ public class AsyncAssetManager {
         }catch (IOException e) {
             Tools.showError(context, e);
         }
+    }
+
+    /** cm2android: device locale as a Minecraft language code (e.g. "ru_ru", "en_us"). */
+    private static String deviceMinecraftLang() {
+        java.util.Locale locale = java.util.Locale.getDefault();
+        String language = locale.getLanguage().toLowerCase(java.util.Locale.ROOT);
+        String country = locale.getCountry().toLowerCase(java.util.Locale.ROOT);
+        if (language.isEmpty()) return "en_us";
+        return country.isEmpty() ? language + "_" + language : language + "_" + country;
     }
 }
