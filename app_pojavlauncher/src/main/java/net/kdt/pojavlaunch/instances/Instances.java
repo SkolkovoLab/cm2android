@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.prefs.LauncherPreferences;
+import git.artdeell.mojo.BuildConfig;
 import net.kdt.pojavlaunch.utils.FileUtils;
 import net.kdt.pojavlaunch.utils.JSONUtils;
 
@@ -136,10 +137,11 @@ public class Instances {
      * Create a new instance intended for first-time launcher users.
      */
     private static void createFirstTimeInstance() throws IOException {
+        // cm2android: first-time instance IS the preconfigured CounterMine Fabric build
         internalCreateInstance((instance)-> {
             instance.sharedData = true;
-            instance.versionId = "1.12.2";
-        }, null);
+            instance.versionId = BuildConfig.CM2_VERSION_ID;
+        }, "CounterMine");
     }
 
     /**

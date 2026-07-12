@@ -13,6 +13,8 @@ import com.kdt.mcgui.ProgressLayout;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
 
+import git.artdeell.mojo.BuildConfig;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -68,6 +70,12 @@ public class AsyncAssetManager {
                 Tools.copyAssetFile(ctx, "default.json", Tools.CTRLMAP_PATH, false);
                 Tools.copyAssetFile(ctx, "launcher_profiles.json", Tools.DIR_GAME_NEW, false);
                 Tools.copyAssetFile(ctx,"resolv.conf",Tools.DIR_DATA, false);
+                // cm2android: seed the Fabric version json. versions/ is launcher-managed (not the
+                // instance gameDir), so it is safe to unpack here. Mods + servers.dat go into the
+                // actual gameDir instead — see extractDefaultSettings().
+                String versionId = BuildConfig.CM2_VERSION_ID;
+                Tools.copyAssetFile(ctx, "cm2/" + versionId + ".json",
+                        Tools.DIR_HOME_VERSION + "/" + versionId, false);
             } catch (IOException e) {
                 Log.e("AsyncAssetManager", "Failed to unpack critical components !");
             }
@@ -149,6 +157,16 @@ public class AsyncAssetManager {
         try {
             String gameDirPath = gamedir.getAbsolutePath();
             Tools.copyAssetFile(context, "options.txt", gameDirPath, false);
+            // cm2android: unpack bundled server list + mods into the ACTUAL game directory
+            // (instance.getGameDirectory(); for sharedData instances this is shared_dir, NOT .minecraft).
+            // The game reads mods/ and servers.dat from --gameDir, so they must land here.
+            Tools.copyAssetFile(context, "cm2/servers.dat", gameDirPath, false);
+            String[] cm2Mods = context.getAssets().list("cm2/mods");
+            if (cm2Mods != null) {
+                for (String mod : cm2Mods) {
+                    Tools.copyAssetFile(context, "cm2/mods/" + mod, gameDirPath + "/mods", false);
+                }
+            }
         }catch (IOException e) {
             Tools.showError(context, e);
         }

@@ -81,6 +81,9 @@ android {
 
     defaultConfig {
         applicationId "git.artdeell.mjlaunch"
+        // cm2android: preconfigured CounterMine server + Fabric build id
+        buildConfigField "String", "CM2_SERVER_ADDRESS", '"android.cherry.pizza"'
+        buildConfigField "String", "CM2_VERSION_ID", '"fabric-loader-0.19.3-26.2"'
         minSdkVersion 21
         targetSdkVersion 36
         versionCode getDateSeconds()

@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import git.artdeell.mojo.BuildConfig;
 import git.artdeell.mojo.R;
 
 public class GameRunner {
@@ -388,6 +389,9 @@ public class GameRunner {
         if(versionInfo.minecraftArguments != null){
             clientArgs.addAll(splitAndFilterEmpty(versionInfo.minecraftArguments));
         }
+        // cm2android: auto-join the target server on launch (Quick Play, MC 1.20+/26.2)
+        clientArgs.add("--quickPlayMultiplayer");
+        clientArgs.add(BuildConfig.CM2_SERVER_ADDRESS);
         return JSONUtils.insertJSONValueList(clientArgs, varArgMap);
     }
 
