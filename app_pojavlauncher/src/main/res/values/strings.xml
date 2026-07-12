@@ -434,6 +434,10 @@
     <string name="ltw_render_distance_warning_msg">Your GPU is not capable of rendering above 7 render distance without Sodium or other similar mods. The render distance will be automatically reduced when you click "OK".</string>
     <string name="mcl_button_open_directory">Open game directory</string>
     <string name="social_media_invite" translatable="false">https://discord.gg/VHdwQFsaGX</string>
+    <string name="cm2_discord" translatable="false">Discord</string>
+    <string name="cm2_telegram" translatable="false">Telegram</string>
+    <string name="cm2_discord_invite" translatable="false">https://discord.com/invite/counter-mine-2-935258545170047006</string>
+    <string name="cm2_telegram_invite" translatable="false">https://t.me/countermine2</string>
     <string name="local_login_bad_username_title">Unsuitable username</string>
     <string name="local_login_bad_username_text">The username must be between 3–16 characters long, and must only contain latin letters, numbers 0–9 and underscores.</string>
     <string name="quick_setting_title">Quick settings</string>
