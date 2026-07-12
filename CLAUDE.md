@@ -145,10 +145,29 @@ gradlew.bat -p tmp/LTW :ltw:assembleRelease -Dorg.gradle.java.home=C:/Users/Admi
 Проверено на устройстве: `shared_dir/mods/` = 3 наших мода, `Loading 50 mods` (sodium, zoomfix, +
 модули fabric-api), сервер в списке. Вариант Б работает полностью.
 
+**Брендинг — СДЕЛАНО (12.07.2026):** иконка `tmp/cm2icon.png` (два бойца, CS-стиль) сгенерена во все
+mipmap-плотности скриптом `scripts/gen_icons.py` (legacy/round/adaptive-foreground с safe-margin 92%,
+webp). Имя приложения → «CounterMine 2» (`app_short_name` во всех 48 локалях). `applicationId` →
+`dev.cherrypizza.mjlaunch` (+`.debug`); namespace/Java-пакет `git.artdeell.mojo` НЕ трогали (только
+android-пакет). Провайдер: resValue `storageProviderAuthorities`/`application_package` (build.gradle
+debug+release) → `dev.cherrypizza.mjlaunch...` (иначе INSTALL_FAILED_CONFLICTING_PROVIDER со старым
+билдом); `group_id` оставлен `git.artdeell` (логика миграции). aapt badging подтверждает.
+
+**Упрощённый вход — СДЕЛАНО (12.07.2026):** убраны Microsoft и ely.by, offline-аккаунт создаётся
+автоматически при СТАРТЕ лаунчера (перехват), логин-экран не показывается. Ник рандомный
+`android_<6 цифр>` (сервер всё равно оверрайдит username), offline UUID из ника
+(`nameUUIDFromBytes("OfflinePlayer:"+name)`). Изменения:
+- `LauncherActivity`: метод `ensureOfflineAccount()` (создаёт local-аккаунт `android_<random>` если
+  нет), вызывается в `onCreate` (перед `bindViews`) — перехватывает старт до показа AccountSpinner;
+  в `mLaunchGameListener` тот же метод как fallback.
+- `SelectAuthFragment`: кнопки Microsoft/ely.by скрыты (`View.GONE`), остался только Local.
+Проверено: чистая установка → старт без окна выбора → аккаунт `android_802387` (authType local,
+accessToken "0", валидный profileId).
+
 **Осталось:**
-1. **Починить подхват модов** (баг выше) — первый приоритет.
-2. Брендинг — имя, иконка, package-id.
-3. Вариант А — кастомный first-run экран «одна кнопка» (ник + Играть).
+1. Вариант А — причесать first-run (разрешения/instance) до «одной кнопки». Основное (offline-авто,
+   автозаход, сборка) уже готово.
+2. Возможные хвосты: финальное ревью правок ветки, git-коммиты, релизная подпись.
 
 ## Прочее
 

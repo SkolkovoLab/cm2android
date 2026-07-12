@@ -26,6 +26,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.kdt.mcgui.ProgressLayout;
 
+import net.kdt.pojavlaunch.authenticator.AuthType;
+import net.kdt.pojavlaunch.authenticator.accounts.Account;
 import net.kdt.pojavlaunch.authenticator.accounts.Accounts;
 import net.kdt.pojavlaunch.extra.ExtraConstants;
 import net.kdt.pojavlaunch.extra.ExtraCore;
@@ -125,9 +127,9 @@ public class LauncherActivity extends BaseActivity {
             return false;
         }
 
+        ensureOfflineAccount();
         if(Accounts.getCurrent() == null){
             Toast.makeText(this, R.string.no_saved_accounts, Toast.LENGTH_LONG).show();
-            ExtraCore.setValue(ExtraConstants.SELECT_AUTH_METHOD, true);
             return false;
         }
         String normalizedVersionId = MoJsonExtras.normalizeVersionId(selectedInstance.versionId);
@@ -161,6 +163,24 @@ public class LauncherActivity extends BaseActivity {
         return false;
     }
 
+    /** cm2android: no Microsoft/ely login — ensure an offline account exists.
+     *  The username is random (android_&lt;digits&gt;); the server overrides it anyway. */
+    private void ensureOfflineAccount() {
+        if(Accounts.getCurrent() != null) return;
+        try {
+            Account account = Accounts.create(a -> {
+                a.username = "android_" + (100000 + new java.util.Random().nextInt(900000));
+                a.authType = AuthType.LOCAL;
+                a.profileId = java.util.UUID.nameUUIDFromBytes(
+                        ("OfflinePlayer:" + a.username).getBytes(java.nio.charset.StandardCharsets.UTF_8)
+                ).toString();
+            });
+            Accounts.setCurrent(account);
+        } catch (java.io.IOException e) {
+            android.util.Log.e("cm2android", "Failed to auto-create offline account", e);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,6 +194,9 @@ public class LauncherActivity extends BaseActivity {
         }
 
         IconCacheJanitor.runJanitor();
+
+        // cm2android: auto-create an offline account at startup so the login screen never shows
+        ensureOfflineAccount();
 
         getWindow().setBackgroundDrawable(null);
         bindViews();

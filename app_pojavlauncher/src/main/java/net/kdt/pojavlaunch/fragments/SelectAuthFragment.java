@@ -28,9 +28,10 @@ public class SelectAuthFragment extends Fragment {
         Button mLocalButton = view.findViewById(R.id.button_local_authentication);
         Button mElyByButton = view.findViewById(R.id.button_elyby_authentication);
 
-        mMicrosoftButton.setOnClickListener(v -> launchAuthFragment(MicrosoftLoginFragment.class, MicrosoftLoginFragment.TAG));
+        // cm2android: Microsoft/ely.by login removed — only local (offline) accounts are used
+        mMicrosoftButton.setVisibility(View.GONE);
+        mElyByButton.setVisibility(View.GONE);
         mLocalButton.setOnClickListener(v -> launchAuthFragment(LocalLoginFragment.class, LocalLoginFragment.TAG));
-        mElyByButton.setOnClickListener(v -> launchAuthFragment(ElyByLoginFragment.class, ElyByLoginFragment.TAG));
     }
 
     private void launchAuthFragment(Class<? extends  Fragment> fragmentClass, String fragmentTag) {
