@@ -157,22 +157,22 @@ public class AsyncAssetManager {
     public static void extractDefaultSettings(Context context, File gamedir)  {
         try {
             String gameDirPath = gamedir.getAbsolutePath();
-            boolean freshOptions = !new File(gamedir, "options.txt").exists();
+            boolean freshGameDir = !new File(gamedir, "options.txt").exists();
             Tools.copyAssetFile(context, "options.txt", gameDirPath, false);
-            // cm2android: on first run, set the Minecraft language to the device language
-            if (freshOptions) {
+            if (freshGameDir) {
+                // cm2android: first run in this game dir. Set the Minecraft language to the device
+                // language, and seed the bundled server list + mods into the ACTUAL game directory
+                // (instance.getGameDirectory(); for sharedData instances this is shared_dir, NOT
+                // .minecraft). The game reads mods/ and servers.dat from --gameDir, so they must land here.
                 MCOptionUtils.load(gameDirPath);
                 MCOptionUtils.set("lang", deviceMinecraftLang());
                 MCOptionUtils.save();
-            }
-            // cm2android: unpack bundled server list + mods into the ACTUAL game directory
-            // (instance.getGameDirectory(); for sharedData instances this is shared_dir, NOT .minecraft).
-            // The game reads mods/ and servers.dat from --gameDir, so they must land here.
-            Tools.copyAssetFile(context, "cm2/servers.dat", gameDirPath, false);
-            String[] cm2Mods = context.getAssets().list("cm2/mods");
-            if (cm2Mods != null) {
-                for (String mod : cm2Mods) {
-                    Tools.copyAssetFile(context, "cm2/mods/" + mod, gameDirPath + "/mods", false);
+                Tools.copyAssetFile(context, "cm2/servers.dat", gameDirPath, false);
+                String[] cm2Mods = context.getAssets().list("cm2/mods");
+                if (cm2Mods != null) {
+                    for (String mod : cm2Mods) {
+                        Tools.copyAssetFile(context, "cm2/mods/" + mod, gameDirPath + "/mods", false);
+                    }
                 }
             }
         }catch (IOException e) {
