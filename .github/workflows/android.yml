@@ -2,6 +2,9 @@ name: Android CI
 
 on:
   push:
+    # tag pushes are built and published by release.yml
+    tags-ignore:
+      - 'v*'
   workflow_dispatch:
   pull_request:
     types: [labeled]

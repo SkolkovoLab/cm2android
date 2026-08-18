@@ -9,5 +9,7 @@ local.properties
 app_pojavlauncher/.cxx/
 .vs/
 /curseforge_key.txt
+cm2_release.jks
+cm2_release.b64
 # cm2android: local working artifacts (LTW build tree, isolated gradle home, source mods, layout backup)
 /tmp/

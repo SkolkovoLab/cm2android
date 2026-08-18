@@ -64,6 +64,10 @@ def resolveCm2Version = {
 
 def cm2Version = resolveCm2Version()
 
+// cm2android: release keystore. CI writes it from a secret before building; local builds usually
+// don't have it, in which case release builds stay unsigned instead of failing outright.
+def cm2ReleaseKeystore = file(System.getenv("CM2_KEYSTORE_FILE") ?: "cm2_release.jks")
+
 def getCFApiKey = {
     String key = System.getenv("CURSEFORGE_API_KEY")
     if(key != null) return key
@@ -109,6 +113,14 @@ android {
             storePassword System.getenv("MOJOPUB_KEYSTORE_PASSWORD")
             keyAlias "key0"
             keyPassword System.getenv("MOJOPUB_KEYSTORE_PASSWORD")
+        }
+        cm2Release {
+            storeFile cm2ReleaseKeystore
+            storePassword System.getenv("CM2_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("CM2_KEY_ALIAS") ?: "cm2"
+            // PKCS12 keystores (the keytool default) have a single password. The override only
+            // matters for older JKS keystores that really do carry a separate key password.
+            keyPassword System.getenv("CM2_KEY_PASSWORD") ?: System.getenv("CM2_KEYSTORE_PASSWORD")
         }
     }
 
@@ -171,6 +183,11 @@ android {
             // debuggable = true
             resValue 'string', 'storageProviderAuthorities', 'dev.cherrypizza.cm2android.scoped.gamefolder'
             resValue 'string', 'application_package', 'dev.cherrypizza.cm2android'
+            if (cm2ReleaseKeystore.isFile()) {
+                signingConfig signingConfigs.cm2Release
+            } else {
+                logger.warn("BUILD: ${cm2ReleaseKeystore} is missing, release builds will be unsigned")
+            }
         }
         gplay {
             initWith release

@@ -101,6 +101,67 @@ gradlew.bat -p tmp/LTW :ltw:assembleRelease -Dorg.gradle.java.home=C:/Users/Admi
 → Для проверки на устройстве, где лаунчер уже запускался, нужна **чистая установка** (снести данные
 приложения или удалить старый `controlmap/default.json`); новые установки подхватывают раскладку сразу.
 
+## Версионирование и апдейтер
+
+**Версия лаунчера** выводится из git-тега `v<major>.<minor>.<patch>` (`app_pojavlauncher/build.gradle`,
+`resolveCm2Version`). Приоритет: явный override → новейший semver-тег → dev-фолбэк.
+- `versionCode = major*10000 + minor*100 + patch` (v1.2.3 → 10203), `versionName = "1.2.3"`.
+- Коммиты после тега → `versionName = "1.2.3-dev-<sha7>"`, versionCode остаётся релизным (иначе апдейтер
+  предлагал бы обновиться на релиз, на котором билд уже основан).
+- Тегов нет → `0.0.0-dev` / versionCode 1.
+- Override для CI: `-Pcm2Version=v1.2.3` или env `CM2_VERSION`. Нужен, потому что `actions/checkout`
+  по умолчанию не тянет теги (иначе — `fetch-depth: 0`).
+
+**Апдейтер** (`net.kdt.pojavlaunch.cm2.updater`) при старте лаунчера дёргает
+`https://api.github.com/repos/<CM2_UPDATE_REPO>/releases/latest` (репо в buildConfigField,
+сейчас `SkolkovoLab/cm2android`, публичный — токен не нужен, анонимный лимит 60 req/ч на IP).
+- `UpdateChecker` — парсит `tag_name` тем же semver→code правилом, сравнивает с `BuildConfig.VERSION_CODE`;
+  draft/prerelease игнорируются. Ошибки (офлайн, 404, rate limit) — молча в лог, запуск не блокируют.
+- `UpdatePrompt` — диалог «Обновить / Позже», один раз за процесс. «Позже» ничего не запоминает:
+  при следующем старте спросит снова. Показ идёт через `ContextExecutor.executeActivity`, плюс
+  `LauncherActivity.onResume` → `showPendingUpdate` (нужно для возврата с экрана «неизвестные источники»).
+- `UpdateInstaller` — качает APK в `cacheDir/launcher_update/` (прогресс в `ProgressLayout.DOWNLOAD_UPDATE`),
+  ставит через `PackageInstaller` session API. Результат приходит в `InstallResultReceiver`
+  (`STATUS_PENDING_USER_ACTION` → системный диалог подтверждения).
+- Манифест: `REQUEST_INSTALL_PACKAGES` + receiver. На API 26+ проверяется `canRequestPackageInstalls()`,
+  иначе юзер отправляется в `ACTION_MANAGE_UNKNOWN_APP_SOURCES`.
+
+**Требования к релизу на GitHub:** тег строго `v1.2.3`, ровно один `.apk`-ассет (апдейтер берёт
+первый подходящий), не draft/prerelease. APK должен быть подписан тем же ключом и иметь тот же
+applicationId, что и установленный у игроков, иначе установка поверх падает.
+
+## Релизы через GitHub Actions
+
+`.github/workflows/release.yml`: пуш тега `v*` (или `workflow_dispatch` с уже существующим тегом) →
+валидация формата тега → checkout на тег (submodules) → JDK 17 + Gradle 8.14.3 → keystore из секрета →
+`assembleFullRelease` с `CM2_VERSION=<тег>` → проверки → публикация релиза с одним APK
+`CounterMine2-v1.2.3.apk`. Номер версии берётся именно из тега (env `CM2_VERSION`), поэтому `fetch-depth`
+и выкачивание тегов не нужны.
+
+Шаг «Verify the APK» страхует от тихих поломок: падает, если APK не подписан (тогда файл назывался бы
+`...-unsigned.apk`) или если в нём нет `libltw.so`; печатает сертификат и badging в лог.
+
+**Секреты репозитория:** обязательны `CM2_KEYSTORE_BASE64` и `CM2_KEYSTORE_PASSWORD` (без первого
+сборка падает сразу, а не выкладывает неподписанный APK). `CM2_KEY_ALIAS` и `CM2_KEY_PASSWORD` —
+опциональные: незаданные (пустые) значения фолбэчатся на `cm2` и на пароль хранилища соответственно.
+Отдельный пароль ключа нужен только для старых JKS-хранилищ — PKCS12 (дефолт keytool с JDK 9+) его
+игнорирует. Полностью убрать пароль нельзя: keytool требует минимум 6 символов.
+
+**Подпись:** signingConfig `cm2Release` в `build.gradle` читает env `CM2_KEYSTORE_FILE` (по умолчанию
+`app_pojavlauncher/cm2_release.jks`, gitignored), `CM2_KEYSTORE_PASSWORD`, `CM2_KEY_ALIAS` (дефолт `cm2`),
+`CM2_KEY_PASSWORD`. Если файла keystore нет — `release` собирается неподписанным с warning’ом в логе.
+Апстримные `debug.keystore` / `mojo_*.jks` к нашим релизам отношения не имеют (и `debug.keystore`
+лежит в публичной репе с паролем `android`, так что им подписывать релизы нельзя).
+**Потеря релизного keystore = невозможность обновлять установленные апки** — только переустановка
+с потерей данных, бэкапь его отдельно.
+
+**applicationId:** релиз — `dev.cherrypizza.cm2android`, локальный debug — `dev.cherrypizza.cm2android.debug`.
+Это разные приложения: релиз не обновляет ранее установленные debug-билды, их надо сносить руками.
+
+`android.yml` (debug CI) теперь игнорирует теги `v*` (иначе на тег стреляли бы два воркфлоу)
+и больше не тянет LTW артефактом из чужого репо: `ltw-release.aar` теперь закоммичен в
+`app_pojavlauncher/libs/` (сборка воспроизводима; пересобирать его — рецепт выше, раздел «LTW»).
+
 ## Окружение / устройство
 
 - Тест-девайс: Sony Xperia 1 VI (`XQ-EC72`), Snapdragon 8 Gen 3 / Adreno 750, Android 16, arm64, Vulkan 1.3, OpenGL ES 3.2.
@@ -187,10 +248,16 @@ enableVsync:true, chatLinksPrompt:false, skipMultiplayerWarning:true; раска
 объектов, остаётся `minecraft/sounds/random/click_stereo.ogg` (на него мапится `ui.button.click`).
 Уже скачанные звуки со старых установок с диска не удаляются — только перестают быть в индексе.
 
+**Апдейтер лаунчера — СДЕЛАНО (18.08.2026):** версионирование по git-тегу + проверка GitHub-релизов при
+старте с диалогом и установкой через `PackageInstaller` (подробности — в разделе «Версионирование и
+апдейтер»). Собрано и проверено на уровне сборки (`versionCode`/`versionName` во всех трёх режимах,
+badging APK); сквозная проверка на устройстве требует опубликованного релиза.
+
 **Осталось:**
 1. Вариант А — причесать first-run (разрешения/instance) до «одной кнопки». Основное (offline-авто,
    автозаход, сборка, настройки) уже готово.
-2. Возможные хвосты: финальное ревью правок ветки, git-коммиты, релизная подпись.
+2. Апдейтер не проверен на устройстве — нужен первый релиз и заведённые секреты подписи.
+3. Возможные хвосты: финальное ревью правок ветки, git-коммиты, релизная подпись.
 
 ## Прочее
 
