@@ -89,7 +89,7 @@ public final class UpdateInstaller {
 
     /**
      * Pushes the APK into a package installer session and commits it. The system then asks the
-     * user to confirm the installation; the outcome arrives in {@link InstallResultReceiver}.
+     * user to confirm the installation; the outcome arrives in {@link UpdateInstallResultActivity}.
      */
     public static void installApk(@NonNull Context context, @NonNull File apkFile) throws IOException {
         Context applicationContext = context.getApplicationContext();
@@ -114,10 +114,11 @@ public final class UpdateInstaller {
     }
 
     private static IntentSender createStatusReceiver(Context applicationContext, int sessionId) {
-        Intent intent = new Intent(applicationContext, InstallResultReceiver.class);
+        // Explicit component on purpose: the installer fills this intent in with the install status,
+        // so it must stay mutable, and Android 14 rejects mutable pending intents that are implicit.
+        Intent intent = new Intent(applicationContext, UpdateInstallResultActivity.class);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        // The package installer fills the intent in with the install status, so it must stay mutable.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) flags |= PendingIntent.FLAG_MUTABLE;
-        return PendingIntent.getBroadcast(applicationContext, sessionId, intent, flags).getIntentSender();
+        return PendingIntent.getActivity(applicationContext, sessionId, intent, flags).getIntentSender();
     }
 }

@@ -121,10 +121,18 @@ gradlew.bat -p tmp/LTW :ltw:assembleRelease -Dorg.gradle.java.home=C:/Users/Admi
   при следующем старте спросит снова. Показ идёт через `ContextExecutor.executeActivity`, плюс
   `LauncherActivity.onResume` → `showPendingUpdate` (нужно для возврата с экрана «неизвестные источники»).
 - `UpdateInstaller` — качает APK в `cacheDir/launcher_update/` (прогресс в `ProgressLayout.DOWNLOAD_UPDATE`),
-  ставит через `PackageInstaller` session API. Результат приходит в `InstallResultReceiver`
+  ставит через `PackageInstaller` session API. Результат приходит в `UpdateInstallResultActivity`
   (`STATUS_PENDING_USER_ACTION` → системный диалог подтверждения).
-- Манифест: `REQUEST_INSTALL_PACKAGES` + receiver. На API 26+ проверяется `canRequestPackageInstalls()`,
-  иначе юзер отправляется в `ACTION_MANAGE_UNKNOWN_APP_SOURCES`.
+- Манифест: `REQUEST_INSTALL_PACKAGES` + невидимая activity результата. На API 26+ проверяется
+  `canRequestPackageInstalls()`, иначе юзер отправляется в `ACTION_MANAGE_UNKNOWN_APP_SOURCES`.
+
+**Грабля (стоила релиза 1.0.1): в этом приложении нельзя объявлять BroadcastReceiver в манифесте.**
+`PojavApplication.attachBaseContext` оборачивает базовый контекст в `LocaleUtils` (ContextWrapper, нужен
+для force-english), а `ActivityThread.handleReceiver` кастит `application.getBaseContext()` к `ContextImpl` —
+manifest-receiver роняет процесс с `ClassCastException`. Поэтому результат установки принимает activity,
+а не receiver. Динамическая регистрация тоже не годится: `PackageInstaller` требует mutable `PendingIntent`,
+а Android 14+ запрещает mutable pending intent с неявным интентом, так что цель обязана быть явным
+компонентом.
 
 **Требования к релизу на GitHub:** тег строго `v1.2.3`, ровно один `.apk`-ассет (апдейтер берёт
 первый подходящий), не draft/prerelease. APK должен быть подписан тем же ключом и иметь тот же

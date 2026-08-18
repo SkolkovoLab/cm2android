@@ -126,9 +126,14 @@
             </intent-filter>
         </provider>
 
-        <receiver
-            android:name="net.kdt.pojavlaunch.cm2.updater.InstallResultReceiver"
-            android:exported="false" />
+        <activity
+            android:name="net.kdt.pojavlaunch.cm2.updater.UpdateInstallResultActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <service android:name="net.kdt.pojavlaunch.services.ProgressService"
             android:foregroundServiceType="dataSync"/>
