@@ -8,7 +8,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.kdt.mcgui.ProgressLayout;
 
 import net.kdt.pojavlaunch.Architecture;
@@ -213,15 +215,21 @@ public class MoJsonDownloader extends Downloader {
     private JAssets downloadAssetsIndex(JVersionList.Version verInfo) throws IOException{
         JVersionList.AssetIndex assetIndex = verInfo.assetIndex;
         if(assetIndex == null || verInfo.assets == null) return null;
-        File targetFile = new File(Tools.ASSETS_PATH, "indexes"+ File.separator + verInfo.assets + ".json");
-        FileUtils.ensureParentDirectory(targetFile);
-        DownloadUtils.ensureSha1(targetFile, assetIndex.sha1, ()-> {
+        // The index the game reads gets rewritten by SoundAssetFilter, which would make the SHA1
+        // check fail on every launch. Keep the pristine copy in the cache directory instead.
+        File sourceFile = new File(Tools.DIR_CACHE, "cm2_asset_index" + File.separator + verInfo.assets + ".json");
+        FileUtils.ensureParentDirectory(sourceFile);
+        DownloadUtils.ensureSha1(sourceFile, assetIndex.sha1, ()-> {
             ProgressLayout.setProgress(ProgressLayout.DOWNLOAD_GAME, 0,
-                    R.string.newdl_downloading_metadata, targetFile.getName());
-            DownloadMirror.downloadFileMirrored(DownloadMirror.DOWNLOAD_CLASS_METADATA, assetIndex.url, targetFile);
+                    R.string.newdl_downloading_metadata, sourceFile.getName());
+            DownloadMirror.downloadFileMirrored(DownloadMirror.DOWNLOAD_CLASS_METADATA, assetIndex.url, sourceFile);
             return null;
         });
-        return Tools.GLOBAL_GSON.fromJson(Tools.read(targetFile), JAssets.class);
+        JsonObject indexJson = JsonParser.parseString(Tools.read(sourceFile)).getAsJsonObject();
+        SoundAssetFilter.stripSounds(indexJson);
+        String filteredIndex = Tools.GLOBAL_GSON.toJson(indexJson);
+        Tools.write(new File(Tools.ASSETS_PATH, "indexes" + File.separator + verInfo.assets + ".json"), filteredIndex);
+        return Tools.GLOBAL_GSON.fromJson(filteredIndex, JAssets.class);
     }
     
     private ClientInfo getClientInfo(JVersionList.Version verInfo) {

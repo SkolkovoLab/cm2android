@@ -172,6 +172,21 @@ enableVsync:true, chatLinksPrompt:false, skipMultiplayerWarning:true; раска
 устройства>)` + save; код языка = `Locale.getDefault()` → `ll_cc` lowercase (метод
 `deviceMinecraftLang()`). Проверено на устройстве (ru-RU → `lang:ru_ru`), все значения применяются.
 
+**Вырезаны звуковые ассеты (18.08.2026):** сервер всё равно перетирает звуки своим ресурспаком, а
+на них приходится основная часть загрузки ассетов. `tasks/SoundAssetFilter` переписывает asset index
+перед планированием загрузок: выкидывает всё под `<ns>/sounds/`, кроме файлов, нужных событиям из
+`KEPT_SOUND_EVENTS` (сейчас — только `minecraft:ui.button.click`), и подменяет `minecraft/sounds.json`
+урезанной копией (иначе игра сыпет warning-ами «File does not exist» на каждое из ~1968 событий).
+Урезанный sounds.json пишется как обычный asset object, в индексе правятся его hash/size — загрузчик
+видит файл на диске как валидный и не тянет оригинал.
+`MoJsonDownloader.downloadAssetsIndex`: оригинал индекса теперь качается в `DIR_CACHE/cm2_asset_index/`
+(sha1-проверка), а в `assets/indexes/<id>.json` (его читает игра) пишется отфильтрованная версия;
+иначе sha1 не сходился бы и индекс перекачивался каждый запуск. Оригинал sounds.json кэшируется в
+`DIR_CACHE/cm2_sound_index/`.
+Проверено на реальном индексе 26.2 (`assets` index `32`): 457.0 MiB → **99.4 MiB**, удалено 4870
+объектов, остаётся `minecraft/sounds/random/click_stereo.ogg` (на него мапится `ui.button.click`).
+Уже скачанные звуки со старых установок с диска не удаляются — только перестают быть в индексе.
+
 **Осталось:**
 1. Вариант А — причесать first-run (разрешения/instance) до «одной кнопки». Основное (offline-авто,
    автозаход, сборка, настройки) уже готово.
