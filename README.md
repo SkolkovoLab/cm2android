@@ -1,88 +1,135 @@
-<H1 align="center">MojoLauncher (a.k.a. MJLauncher)</H1>
+<h1 align="center">CounterMine 2</h1>
 
-<a href="./README_RU.md">Readme на русском</a>
+<p align="center">
+  <img src="./app_pojavlauncher/src/main/res/mipmap-xxhdpi/ic_launcher.webp" width="128" height="128" alt="CounterMine 2">
+</p>
 
-<img src="./app_pojavlauncher/src/main/assets/pojavlauncher.png" align="left" width="150" height="150" alt="MojoLauncher logo">
+<p align="center">
+  <a href="https://github.com/SkolkovoLab/cm2android/releases/latest"><img src="https://img.shields.io/github/v/release/SkolkovoLab/cm2android" alt="Latest release"></a>
+  <a href="https://github.com/SkolkovoLab/cm2android/actions"><img src="https://github.com/SkolkovoLab/cm2android/workflows/Android%20CI/badge.svg" alt="Android CI"></a>
+</p>
 
-[![Android CI](https://github.com/MojoLauncher/MojoLauncher/workflows/Android%20CI/badge.svg)](https://github.com/MojoLauncher/MojoLauncher/actions)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/MojoLauncher/MojoLauncher)](https://github.com/MojoLauncher/MojoLauncher/actions)
-[![Discord](https://img.shields.io/discord/1365346109131722753.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VHdwQFsaGX)
+Android-лаунчер для сервера **CounterMine 2**
 
-* MojoLauncher is a launcher, based on [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher), that allows you to play Minecraft: Java Edition on your Android device!
+Проект — форк [MojoLauncher](https://github.com/MojoLauncher/MojoLauncher) (ветка `v3_openjdk`),
+который, в свою очередь, основан на [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher).
+Лицензия — [GNU LGPLv3](./LICENSE), как у апстрима.
 
-* It can run almost every version of Minecraft, allowing you to use .jar only installers to install modloaders such as [Forge](https://files.minecraftforge.net/) and [Fabric](http://fabricmc.net/) and mods like [OptiFine](https://optifine.net).
+## Что настроено из коробки
 
-## Navigation
-- [Introduction](#introduction)
-- [Getting MojoLauncher](#getting-mojolauncher)
-- [Building](#building) 
-- [Current roadmap](#current-roadmap) 
-- [License](#license) 
-- [Contributing](#contributing) 
-- [Credits & Third party components and their licenses](#credits--third-party-components-and-their-licenses-if-available)
+- **Сборка игры.** Minecraft 26.2 + Fabric Loader 0.19.3, моды Fabric API, Sodium и
+  ZoomSensitivityFix вшиты в APK и раскатываются при первом запуске.
+- **Автоматический вход на сервер.** Игра стартует с `--quickPlayMultiplayer`, адрес сервера
+  зашит в сборку (`CM2_SERVER_ADDRESS`); сервер также добавлен в список серверов.
+- **Аккаунт без логина.** Сервер работает в offline-режиме, поэтому лаунчер сам создаёт
+  локальный аккаунт при первом старте — экран выбора способа входа не показывается.
+- **Сенсорная раскладка под шутер.** Джойстик движения, две кнопки стрельбы, покупка,
+  перезарядка, смена слотов, приседание и бег — вшита как раскладка по умолчанию.
+- **Предустановленные настройки игры.** `options.txt` с разумными дефолтами; язык интерфейса
+  выставляется по языку устройства.
+- **Урезанные звуковые ассеты.** Сервер всё равно перетирает звуки своим ресурспаком, поэтому
+  индекс ассетов фильтруется перед скачиванием: ~457 МБ → ~99 МБ.
+- **Встроенный апдейтер.** При старте лаунчер сверяет свою версию с последним релизом на GitHub
+  и предлагает обновиться; APK скачивается и ставится изнутри приложения.
 
-## Introduction 
-* MojoLauncher is a Minecraft: Java Edition launcher for Android based on [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher)
-* This launcher can launch almost all available Minecraft versions ranging from rd-132211 to 26.x snapshots (including Combat Test versions). 
-* Modding via Forge and Fabric are also supported. 
+Сам клиент Minecraft в APK не входит — он скачивается с серверов Mojang при первом запуске.
 
-## Getting MojoLauncher
+## Установка
 
-You can get MojoLauncher via four methods:
+Готовый APK — в разделе [releases](https://github.com/SkolkovoLab/cm2android/releases/latest).
+Дальше лаунчер обновляет себя сам.
 
-1. You can get the prebuilt app from the [releases section](http://github.com/mojolauncher/mojolauncher/releases).
+Требуется Android 5.0 (API 21) или новее. Поддерживаемые ABI: `arm64-v8a`, `armeabi-v7a`,
+`x86`, `x86_64`.
 
-2. You can get it from Google Play by clicking on this badge:
-[![Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=git.artdeell.mjlaunch)
+## Сборка
 
-3. You can get early builds from [Github Actions](http://github.com/mojolauncher/mojolauncher/actions).
+Требования:
 
-4. You can [build](#building) from source.
-## Building   
-* Build the launcher (it will automatically download all required components)
+- JDK 17 (сборка проверялась на Zulu 17)
+- Android SDK: `platforms;android-36`, `build-tools;36.0.0`, `ndk;29.0.14206865`, `cmake;3.22.1`
+- путь к SDK в `local.properties` (`sdk.dir`)
+
+Репозиторий содержит сабмодуль `glfw`, поэтому клонировать нужно вместе с ним:
+
 ```
-./gradlew :app_pojavlauncher:assembleDebug
+git clone --recurse-submodules https://github.com/SkolkovoLab/cm2android.git
 ```
-(Replace `./gradlew` with `.\gradlew.bat` if you are building on Windows).
 
-## Current roadmap
-- [x] Instance system in favor of profiles
-- [x] Out-of-the box 1.21.5 support
-- [x] mrpack/CurseForge zip import
-- [ ] LTW: resolve issues with Create
-- [ ] LTW: enable compute shader/image extensions
-- [ ] LTW: switch to a color-renderable format for framebuffers
-- [ ] Modpack/mod management tool
-- [ ] MMC-compatible instance import
-- [ ] Implement common native library standard
+Отладочная сборка:
 
-## Known Issues
-- Some physical mice may have very slow mouse speed
-- On Holy GL4ES, large texture atlases may be distorted (resulting in stretched/blocky textures in modpacks)
-- Probably more, that's why we have a bug tracker ;) 
+```
+./gradlew :app_pojavlauncher:assembleFullDebug
+```
 
-## License
-- MojoLauncher is licensed under [GNU LGPLv3](https://github.com/MojoLauncher/MojoLauncher/blob/v3_openjdk/LICENSE).
+(на Windows — `.\gradlew.bat`). Артефакт:
+`app_pojavlauncher/build/outputs/apk/full/debug/app_pojavlauncher-full-debug.apk`.
 
-## Contributing
-Contributions are welcome! We welcome any type of contribution, not only code. For example, you can help the wiki shape up. You can help the [translation](https://crowdin.com/project/pojavlauncher) too!
+Флейвор `full` включает JRE-рантайм и используется для всех сборок проекта; `noruntime` остался
+от апстрима.
 
+`applicationId` у debug-сборки — `dev.cherrypizza.cm2android.debug`, у релизной —
+`dev.cherrypizza.cm2android`. Это разные приложения: они уживаются на одном устройстве, но
+релиз не обновляет ранее установленный debug-билд.
 
-Any code change to this repository should be submitted as a pull request. The description should explain what the code does and give steps to execute it.
+## Рендереры
 
-## Third party components, licenses and sources (when applicable)
-- [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GNU LGPLv3 License](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
-- [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown License/[Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
-- Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
-- [Holy GL4ES](https://github.com/artdeell/gl4es_extra_extra/): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE).<br>
-- [OpenJDK](https://github.com/PojavLauncherTeam/openjdk-multiarch-jdk8u): [GNU GPLv2 License](https://openjdk.java.net/legal/gplv2+ce.html).<br>
+В сборку входят все рендереры апстрима, выбираются в настройках лаунчера.
+
+| Настройка | Рендерер | Примечание |
+|---|---|---|
+| `opengles2` | Holy GL4ES | значение по умолчанию у апстрима, новые версии Minecraft не тянет |
+| `vulkan_zink` | Zink (GL поверх Vulkan) | на части устройств поворачивает экран |
+| `freedreno_kgsl` | Freedreno/Turnip | рабочий вариант на Adreno |
+| `opengles3_ltw` | LTW | универсальный GLES-враппер для устройств без Vulkan |
+
+`libltw.so` собирается отдельным проектом [LTW](https://github.com/MojoLauncher/LTW); готовый
+`ltw-release.aar` закоммичен в `app_pojavlauncher/libs/`, так что сборка воспроизводима без него.
+
+## Версии и релизы
+
+Версия выводится из git-тега вида `v1.2.3`: `versionName` = `1.2.3`,
+`versionCode` = `major * 10000 + minor * 100 + patch`. Коммиты поверх тега дают
+`1.2.3-dev-<sha>`. Версию можно задать явно через `-Pcm2Version=v1.2.3` или переменную окружения
+`CM2_VERSION` — так делает CI, потому что checkout по умолчанию теги не выкачивает.
+
+Релиз выпускается пушем тега `v*`: workflow `.github/workflows/release.yml` собирает
+`assembleFullRelease`, подписывает релизным ключом и публикует APK в релиз. Нужны секреты
+репозитория `CM2_KEYSTORE_BASE64` и `CM2_KEYSTORE_PASSWORD` (плюс опциональные `CM2_KEY_ALIAS`
+и `CM2_KEY_PASSWORD`).
+
+Апдейтер ищет в последнем релизе ровно один `.apk`-ассет и игнорирует draft/prerelease.
+APK обязан быть подписан тем же ключом, иначе установка поверх у игроков не пройдёт.
+
+## Отличия от апстрима
+
+- вшитая Fabric-сборка, моды и `servers.dat`, автозаход на сервер;
+- автоматический offline-аккаунт вместо экрана выбора способа входа (Microsoft и ely.by убраны);
+- своя раскладка управления и `options.txt` по умолчанию;
+- фильтрация звуковых ассетов при скачивании;
+- собственный апдейтер по релизам GitHub;
+- брендинг: иконка, имя приложения, `applicationId`.
+
+## Лицензия и сторонние компоненты
+
+Проект распространяется под [GNU LGPLv3](./LICENSE) — той же лицензией, что и MojoLauncher.
+
+- [MojoLauncher](https://github.com/MojoLauncher/MojoLauncher): [GNU LGPLv3](https://github.com/MojoLauncher/MojoLauncher/blob/v3_openjdk/LICENSE)
+- [PojavLauncher](https://github.com/PojavLauncherTeam/PojavLauncher): [GNU LGPLv3](https://github.com/PojavLauncherTeam/PojavLauncher/blob/v3_openjdk/LICENSE)
+- [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM-лаунчер): [Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) или GNU GPLv2
+- Android Support Libraries: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt)
+- [Holy GL4ES](https://github.com/artdeell/gl4es_extra_extra/): [MIT License](https://github.com/ptitSeb/gl4es/blob/master/LICENSE)
+- [OpenJDK](https://github.com/PojavLauncherTeam/openjdk-multiarch-jdk8u): [GNU GPLv2](https://openjdk.java.net/legal/gplv2+ce.html)
 - [GLFW](https://github.com/MojoLauncher/glfw): [zlib license](https://github.com/MojoLauncher/glfw/blob/glfw34/LICENSE.md)
 - [LWJGL2-GLFW](https://github.com/MojoLauncher/lwjgl2-glfw): 3-Clause BSD license
-- [LWJGL3](https://github.com/LWJGL/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md).
-- [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html).
-- [pro-grade](https://github.com/pro-grade/pro-grade) (Java sandboxing security manager): [Apache License 2.0](https://github.com/pro-grade/pro-grade/blob/master/LICENSE.txt).
-- [bhook](https://github.com/bytedance/bhook) (Used for exit code trapping): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE).
-- [Authlib-Injector](https://github.com/yushijinhun/authlib-injector) (Used for authorisation via ely.by): [AGPL-3.0](https://github.com/yushijinhun/authlib-injector/blob/develop/LICENSE).
-- [alsoft](https://github.com/kcat/openal-soft/) (Audio output library): [GNU LIBRARY GENERAL PUBLIC LICENSE](https://github.com/kcat/openal-soft/blob/master/COPYING) and [modified PFFFT](https://github.com/kcat/openal-soft/blob/master/LICENSE-pffft).
-- [oboe](https://github.com/google/oboe): [Apache License 2.0](https://github.com/google/oboe/blob/main/LICENSE).
-- Thanks to [Mineskin](https://mineskin.eu/) for providing Minecraft avatars.
+- [LWJGL3](https://github.com/LWJGL/lwjgl3): [BSD-3 License](https://github.com/LWJGL/lwjgl3/blob/master/LICENSE.md)
+- [Mesa 3D Graphics Library](https://gitlab.freedesktop.org/mesa/mesa): [MIT License](https://docs.mesa3d.org/license.html)
+- [pro-grade](https://github.com/pro-grade/pro-grade): [Apache License 2.0](https://github.com/pro-grade/pro-grade/blob/master/LICENSE.txt)
+- [bhook](https://github.com/bytedance/bhook): [MIT license](https://github.com/bytedance/bhook/blob/main/LICENSE)
+- [alsoft](https://github.com/kcat/openal-soft/): [GNU LGPL](https://github.com/kcat/openal-soft/blob/master/COPYING) и [modified PFFFT](https://github.com/kcat/openal-soft/blob/master/LICENSE-pffft)
+- [oboe](https://github.com/google/oboe): [Apache License 2.0](https://github.com/google/oboe/blob/main/LICENSE)
+- [Fabric Loader](https://github.com/FabricMC/fabric-loader) и [Fabric API](https://github.com/FabricMC/fabric): [Apache License 2.0](https://github.com/FabricMC/fabric-loader/blob/master/LICENSE)
+- [Sodium](https://github.com/CaffeineMC/sodium): [LGPLv3](https://github.com/CaffeineMC/sodium/blob/dev/LICENSE.txt)
+- [ZoomSensitivityFix](https://modrinth.com/mod/zoomsensitivityfix): MIT License
+
+Minecraft — торговая марка Mojang Studios. Проект не связан с Mojang Studios и Microsoft.
