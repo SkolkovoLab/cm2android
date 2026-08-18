@@ -509,4 +509,14 @@
     <string name="migration_notice">Looks like you have already used this application in the past. You can import old launcher installation data from miscellaneous settings.</string>
     <string name="preference_alsoft_opensl_title">Forcefully use OpenSL for audio</string>
     <string name="preference_alsoft_opensl_summary">Forcefully enables OpenSL backend in ALSoft instead of Oboe. Can fix audio capture issues on some devices. Disable if you see audio playback/capture issues</string>
+
+    <!-- cm2android: launcher updater -->
+    <string name="cm2_update_dialog_title">Update available</string>
+    <string name="cm2_update_dialog_message">CounterMine 2 %1$s is available. Installed version: %2$s.</string>
+    <string name="cm2_update_dialog_update">Update</string>
+    <string name="cm2_update_dialog_later">Later</string>
+    <string name="cm2_update_downloading">Downloading update %1$s</string>
+    <string name="cm2_update_download_failed">Failed to download the update</string>
+    <string name="cm2_update_install_failed">Failed to install the update: %1$s</string>
+    <string name="cm2_update_unknown_sources">To install the update, allow CounterMine 2 to install unknown apps.</string>
 </resources>

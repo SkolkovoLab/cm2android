@@ -29,6 +29,7 @@ import com.kdt.mcgui.ProgressLayout;
 import net.kdt.pojavlaunch.authenticator.AuthType;
 import net.kdt.pojavlaunch.authenticator.accounts.Account;
 import net.kdt.pojavlaunch.authenticator.accounts.Accounts;
+import net.kdt.pojavlaunch.cm2.updater.UpdatePrompt;
 import net.kdt.pojavlaunch.extra.ExtraConstants;
 import net.kdt.pojavlaunch.extra.ExtraCore;
 import net.kdt.pojavlaunch.extra.ExtraListener;
@@ -198,6 +199,9 @@ public class LauncherActivity extends BaseActivity {
         // cm2android: auto-create an offline account at startup so the login screen never shows
         ensureOfflineAccount();
 
+        // cm2android: offer the latest GitHub release if this build is outdated
+        UpdatePrompt.checkAsync();
+
         getWindow().setBackgroundDrawable(null);
         bindViews();
         mRequestPermissionLauncher = this.registerForActivityResult(
@@ -230,6 +234,7 @@ public class LauncherActivity extends BaseActivity {
         mProgressLayout.observe(ProgressLayout.DOWNLOAD_VERSION_LIST);
         mProgressLayout.observe(ProgressLayout.INSTANCE_INSTALL);
         mProgressLayout.observe(ProgressLayout.DATA_MIGRATION);
+        mProgressLayout.observe(ProgressLayout.DOWNLOAD_UPDATE);
     }
 
     @Override
@@ -237,6 +242,8 @@ public class LauncherActivity extends BaseActivity {
         super.onResume();
         ContextExecutor.setActivity(this);
         InstanceInstaller.postInstallCheck(this);
+        // Re-offers the update after the user comes back from the "install unknown apps" screen
+        UpdatePrompt.showPendingUpdate(this);
     }
 
     @Override

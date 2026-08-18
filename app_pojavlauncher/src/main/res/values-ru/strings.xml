@@ -457,4 +457,14 @@
     <string name="migration_progress_space">На вашем устройстве недостаточно места для переноса данных. Освободите как минимум $%1l МБ или больше чтобы продолжить</string>
     <string name="preference_alsoft_opensl_title">Принудительно использовать OpenSL для аудио</string>
     <string name="preference_alsoft_opensl_summary">Включает принудительное использование OpenSL вместо Oboe для ALSoft. Может исправить проблемы с записью звука на некоторых устройствах. Выключите если вы наблюдаете проблемы с записью или воспроизведением звука.</string>
+
+    <!-- cm2android: launcher updater -->
+    <string name="cm2_update_dialog_title">Доступно обновление</string>
+    <string name="cm2_update_dialog_message">Доступна CounterMine 2 %1$s. Установлена версия %2$s.</string>
+    <string name="cm2_update_dialog_update">Обновить</string>
+    <string name="cm2_update_dialog_later">Позже</string>
+    <string name="cm2_update_downloading">Загрузка обновления %1$s</string>
+    <string name="cm2_update_download_failed">Не удалось скачать обновление</string>
+    <string name="cm2_update_install_failed">Не удалось установить обновление: %1$s</string>
+    <string name="cm2_update_unknown_sources">Чтобы установить обновление, разрешите CounterMine 2 устанавливать неизвестные приложения.</string>
 </resources>

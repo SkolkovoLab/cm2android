@@ -8,28 +8,61 @@ apply from: rootProject.file('gradle/prefab_bypass.gradle')
 
 import de.undercouch.gradle.tasks.download.Download
 
-static def getDate() { return new Date().format('yyyyMMdd') }
-
-static def getDateSeconds() {
-    if (System.getenv("GITHUB_ACTIONS") == "true") {
-        return Integer.parseInt(System.getenv("GITHUB_RUN_NUMBER"))
-    } else {
-        return 172005
-    }
+// cm2android: the launcher version comes from the newest v<major>.<minor>.<patch> git tag.
+// versionCode is derived from that semver, and the in-app updater re-derives it from the tag of
+// the latest GitHub release, so both sides must keep this mapping in sync.
+static def parseSemver(String tagName) {
+    if (tagName == null) return null
+    def matcher = (tagName.trim() =~ /^v?(\d+)\.(\d+)\.(\d+)$/)
+    if (!matcher.matches()) return null
+    return [matcher.group(1) as int, matcher.group(2) as int, matcher.group(3) as int]
 }
 
-def getVersionName = {
-    def currentBranch = grgit.branch.current()
-    def latestCommit = grgit.log(maxCommits: 1)
-    def dateToday = getDate()
-    if(currentBranch == null || latestCommit == null) {
-        return "LOCAL-${dateToday}"
-    }else {
-        def branchName = currentBranch.getName()
-        def commitAbbreviation = latestCommit.abbreviatedId
-        return "iris-${dateToday}-${commitAbbreviation}-${branchName}"
-    }
+static def semverToCode(List semver) {
+    return semver[0] * 10000 + semver[1] * 100 + semver[2]
 }
+
+// Resolves the version as [code: int, name: String].
+// Priority: explicit override (CI tag builds) -> newest semver tag -> development fallback.
+def resolveCm2Version = {
+    def override = System.getenv("CM2_VERSION") ?: findProperty("cm2Version")
+    if (override != null && !override.toString().trim().isEmpty()) {
+        def semver = parseSemver(override.toString())
+        if (semver != null) return [code: semverToCode(semver), name: semver.join('.')]
+        logger.warn("BUILD: CM2 version override '${override}' is not a v<major>.<minor>.<patch> tag, ignoring it")
+    }
+
+    def newestSemver = null
+    def newestTag = null
+    try {
+        grgit.tag.list().each { tag ->
+            def semver = parseSemver(tag.name)
+            if (semver == null) return
+            if (newestSemver == null || semverToCode(semver) > semverToCode(newestSemver)) {
+                newestSemver = semver
+                newestTag = tag
+            }
+        }
+    } catch (Exception e) {
+        logger.warn("BUILD: unable to read git tags (${e.message}), falling back to a development version")
+    }
+
+    // No release tag yet: use the lowest possible code so that any published release wins.
+    if (newestSemver == null) return [code: 1, name: "0.0.0-dev"]
+
+    def versionName = newestSemver.join('.')
+    try {
+        def head = grgit.head()
+        // Commits past the tag are development builds. They keep the released version code so
+        // that the updater does not offer an update to the release this build is already based on.
+        if (head.id != newestTag.commit.id) versionName = "${versionName}-dev-${head.abbreviatedId}"
+    } catch (Exception ignored) {
+        versionName = "${versionName}-dev"
+    }
+    return [code: semverToCode(newestSemver), name: versionName]
+}
+
+def cm2Version = resolveCm2Version()
 
 def getCFApiKey = {
     String key = System.getenv("CURSEFORGE_API_KEY")
@@ -84,10 +117,12 @@ android {
         // cm2android: preconfigured CounterMine server + Fabric build id
         buildConfigField "String", "CM2_SERVER_ADDRESS", '"android.cherry.pizza"'
         buildConfigField "String", "CM2_VERSION_ID", '"fabric-loader-0.19.3-26.2"'
+        // GitHub repository the in-app updater polls for new releases
+        buildConfigField "String", "CM2_UPDATE_REPO", '"SkolkovoLab/cm2android"'
         minSdkVersion 21
         targetSdkVersion 36
-        versionCode getDateSeconds()
-        versionName getVersionName()
+        versionCode cm2Version.code
+        versionName cm2Version.name
         multiDexEnabled false //important
         resValue 'string', 'curseforge_api_key', getCFApiKey()
         resValue 'string', 'group_id', 'git.artdeell'
