@@ -126,7 +126,14 @@ gradlew.bat -p tmp/LTW :ltw:assembleRelease -Dorg.gradle.java.home=C:/Users/Admi
 - Манифест: `REQUEST_INSTALL_PACKAGES` + невидимая activity результата. На API 26+ проверяется
   `canRequestPackageInstalls()`, иначе юзер отправляется в `ACTION_MANAGE_UNKNOWN_APP_SOURCES`.
 
-**Грабля (стоила релиза 1.0.1): в этом приложении нельзя объявлять BroadcastReceiver в манифесте.**
+**Грабля 2: BAL.** С Android 14 создатель `PendingIntent` обязан явно
+разрешить запуск activity из фона, иначе система режет старт с `Background activity launch blocked`
+(в логе `balRequireOptInByPendingIntentCreator: true`, `START ... (BAL_BLOCK)`), и диалог подтверждения
+установки просто не появляется — внешне «скачалось и ничего не произошло». Лечится передачей
+`ActivityOptions.makeBasic().setPendingIntentCreatorBackgroundActivityStartMode(
+MODE_BACKGROUND_ACTIVITY_START_ALLOWED).toBundle()` в `PendingIntent.getActivity`.
+
+**Грабля 1: в этом приложении нельзя объявлять BroadcastReceiver в манифесте.**
 `PojavApplication.attachBaseContext` оборачивает базовый контекст в `LocaleUtils` (ContextWrapper, нужен
 для force-english), а `ActivityThread.handleReceiver` кастит `application.getBaseContext()` к `ContextImpl` —
 manifest-receiver роняет процесс с `ClassCastException`. Поэтому результат установки принимает activity,

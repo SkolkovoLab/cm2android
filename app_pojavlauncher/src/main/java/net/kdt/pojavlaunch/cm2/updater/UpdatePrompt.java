@@ -94,11 +94,20 @@ public final class UpdatePrompt {
         Context applicationContext = activity.getApplicationContext();
         sExecutorService.execute(() -> {
             try {
-                File apkFile = UpdateInstaller.downloadApk(applicationContext, update);
+                File apkFile;
+                try {
+                    apkFile = UpdateInstaller.downloadApk(applicationContext, update);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to download the launcher update", e);
+                    toast(applicationContext, applicationContext.getString(R.string.cm2_update_download_failed));
+                    return;
+                }
+                Log.i(TAG, "Update downloaded to " + apkFile + ", handing it to the package installer");
                 UpdateInstaller.installApk(applicationContext, apkFile);
             } catch (Exception e) {
                 Log.e(TAG, "Failed to install the launcher update", e);
-                toast(applicationContext, applicationContext.getString(R.string.cm2_update_download_failed));
+                toast(applicationContext,
+                        applicationContext.getString(R.string.cm2_update_install_failed, e.toString()));
             } finally {
                 ProgressLayout.clearProgress(ProgressLayout.DOWNLOAD_UPDATE);
                 sUpdateRunning.set(false);

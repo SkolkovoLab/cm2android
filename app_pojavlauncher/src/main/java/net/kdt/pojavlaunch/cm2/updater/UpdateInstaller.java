@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.app.PendingIntent;
+import android.app.ActivityOptions;
 import android.content.pm.PackageInstaller;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.kdt.mcgui.ProgressLayout;
 
@@ -119,6 +122,21 @@ public final class UpdateInstaller {
         Intent intent = new Intent(applicationContext, UpdateInstallResultActivity.class);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) flags |= PendingIntent.FLAG_MUTABLE;
-        return PendingIntent.getActivity(applicationContext, sessionId, intent, flags).getIntentSender();
+        return PendingIntent.getActivity(applicationContext, sessionId, intent, flags,
+                backgroundActivityStartOptions()).getIntentSender();
+    }
+
+    /**
+     * Since Android 14 the creator of a pending intent has to opt in before the system may start an
+     * activity from it in the background. Without this the install confirmation never appears: the
+     * launch is refused with "Background activity launch blocked" (BAL_BLOCK).
+     */
+    @Nullable
+    private static Bundle backgroundActivityStartOptions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null;
+        return ActivityOptions.makeBasic()
+                .setPendingIntentCreatorBackgroundActivityStartMode(
+                        ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED)
+                .toBundle();
     }
 }
