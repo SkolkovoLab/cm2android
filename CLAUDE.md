@@ -148,9 +148,9 @@ gradlew.bat -p tmp/LTW :ltw:assembleRelease -Dorg.gradle.java.home=C:/Users/Admi
 **Брендинг — СДЕЛАНО (12.07.2026):** иконка `tmp/cm2icon.png` (два бойца, CS-стиль) сгенерена во все
 mipmap-плотности скриптом `scripts/gen_icons.py` (legacy/round/adaptive-foreground с safe-margin 92%,
 webp). Имя приложения → «CounterMine 2» (`app_short_name` во всех 48 локалях). `applicationId` →
-`dev.cherrypizza.mjlaunch` (+`.debug`); namespace/Java-пакет `git.artdeell.mojo` НЕ трогали (только
+`dev.cherrypizza.cm2android` (+`.debug`); namespace/Java-пакет `git.artdeell.mojo` НЕ трогали (только
 android-пакет). Провайдер: resValue `storageProviderAuthorities`/`application_package` (build.gradle
-debug+release) → `dev.cherrypizza.mjlaunch...` (иначе INSTALL_FAILED_CONFLICTING_PROVIDER со старым
+debug+release) → `dev.cherrypizza.cm2android...` (иначе INSTALL_FAILED_CONFLICTING_PROVIDER со старым
 билдом); `group_id` оставлен `git.artdeell` (логика миграции). aapt badging подтверждает.
 
 **Упрощённый вход — СДЕЛАНО (12.07.2026):** убраны Microsoft и ely.by, offline-аккаунт создаётся

@@ -80,7 +80,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "dev.cherrypizza.mjlaunch"
+        applicationId "dev.cherrypizza.cm2android"
         // cm2android: preconfigured CounterMine server + Fabric build id
         buildConfigField "String", "CM2_SERVER_ADDRESS", '"android.cherry.pizza"'
         buildConfigField "String", "CM2_VERSION_ID", '"fabric-loader-0.19.3-26.2"'
@@ -113,8 +113,8 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.customDebug
-            resValue 'string', 'application_package', 'dev.cherrypizza.mjlaunch.debug'
-            resValue 'string', 'storageProviderAuthorities', 'dev.cherrypizza.mjlaunch.scoped.gamefolder.debug'
+            resValue 'string', 'application_package', 'dev.cherrypizza.cm2android.debug'
+            resValue 'string', 'storageProviderAuthorities', 'dev.cherrypizza.cm2android.scoped.gamefolder.debug'
         }
         proguard {
             initWith debug
@@ -134,8 +134,8 @@ android {
             // defaultConfig already set
             // multiDexEnabled = true
             // debuggable = true
-            resValue 'string', 'storageProviderAuthorities', 'dev.cherrypizza.mjlaunch.scoped.gamefolder'
-            resValue 'string', 'application_package', 'dev.cherrypizza.mjlaunch'
+            resValue 'string', 'storageProviderAuthorities', 'dev.cherrypizza.cm2android.scoped.gamefolder'
+            resValue 'string', 'application_package', 'dev.cherrypizza.cm2android'
         }
         gplay {
             initWith release
