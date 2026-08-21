@@ -28,7 +28,7 @@
     <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#99000000"
+            android:background="#00000000"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,16 +75,20 @@
                 android:textStyle="bold"
                 tools:text="Онлайн: 1,240"/>
     </LinearLayout>
+
+    <!-- Нижняя панель с версией, профилем и кнопкой Play -->
     <LinearLayout
             android:id="@+id/side_menu_layout"
-            android:layout_width="178dp"
-            android:layout_height="289dp"
+            android:layout_width="153dp"
+            android:layout_height="139dp"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="4dp"
             android:gravity="bottom"
+            android:background="#88000000"
             app:layout_constraintTop_toBottomOf="@id/app_logo"
             app:layout_constraintBottom_toTopOf="@id/_background_display_view"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="4dp"
+            app:layout_constraintVertical_bias="0.494">
 
         <com.kdt.mcgui.LauncherMenuButton
                 android:id="@+id/custom_control_button"
@@ -105,8 +109,6 @@
                 android:text="@string/mcl_options"/>
 
     </LinearLayout>
-
-    <!-- Нижняя панель с версией, профилем и кнопкой Play -->
     <View
         android:id="@+id/_background_display_view"
         android:layout_width="match_parent"
@@ -155,14 +157,15 @@
         app:layout_constraintEnd_toEndOf="parent" />
     <LinearLayout
             android:id="@+id/side_socials_layout"
-            android:layout_width="174dp"
-            android:layout_height="264dp"
+            android:layout_width="169dp"
+            android:layout_height="126dp"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="4dp"
             android:gravity="center"
+            android:background="#88000000"
             app:layout_constraintBottom_toTopOf="@id/_background_display_view"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="572dp" app:layout_constraintVertical_bias="0.75"
+            android:layout_marginStart="560dp" app:layout_constraintVertical_bias="0.606"
             app:layout_constraintTop_toTopOf="parent">
 
         <com.kdt.mcgui.LauncherMenuButton
