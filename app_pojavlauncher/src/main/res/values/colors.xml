@@ -8,7 +8,7 @@
     <color name="divider">@color/background_overlay</color>
     <color name="background_overlay">#464646</color>
     <color name="background_status_bar">#171615</color>
-    <color name="background_bottom_bar">#171615</color>
+    <color name="background_bottom_bar">#9A171615</color>
     <color name="icon_outline_color">#FFFFFF</color>
 
     <color name="primary_text">#FFFFFF</color>

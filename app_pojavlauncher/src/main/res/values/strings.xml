@@ -519,4 +519,6 @@
     <string name="cm2_update_download_failed">Failed to download the update</string>
     <string name="cm2_update_install_failed">Failed to install the update: %1$s</string>
     <string name="cm2_update_unknown_sources">To install the update, allow CounterMine 2 to install unknown apps.</string>
+    <string name="unknown_online_count">PLAYING: - PPL</string>
+    <string name="playing_online_format">PLAYING: %d PPL</string>
 </resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Узкие боковые кнопки: меньше отступ слева от иконки и между иконкой и текстом -->
+    <dimen name="launcher_menu_button_padding">@dimen/_6sdp</dimen>
+</resources>

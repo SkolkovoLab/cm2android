@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_menu_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_app">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_menu_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_app">
 
-    <!-- Фоновое изображение или арт (можно заменить на ImageView с картинкой) -->
     <ImageView
             android:id="@+id/background_image"
             android:layout_width="0dp"
@@ -18,77 +17,73 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Затемнение фона для читаемости интерфейса -->
-
-    <!-- Логотип лаунчера в верхнем левом углу -->
-
-    <!-- Счетчик онлайна в верхнем правом углу -->
-    <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="#00000000"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintVertical_bias="0.0"/>
+    <View
+            android:id="@+id/_background_header_view"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:background="@color/background_bottom_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Боковая панель с кнопками управления слева -->
     <ImageView
             android:id="@+id/app_logo"
             android:layout_width="145dp"
             android:layout_height="21dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:scaleType="fitStart"
             android:src="@drawable/logo"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/_background_header_view"
+            app:layout_constraintBottom_toBottomOf="@id/_background_header_view"
             app:layout_constraintStart_toStartOf="parent"/>
+
     <LinearLayout
             android:id="@+id/online_counter_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@drawable/bg_online_counter"
+            android:background="@color/background_bottom_bar"
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@id/_background_header_view"
+            app:layout_constraintBottom_toBottomOf="@id/_background_header_view"
             app:layout_constraintEnd_toEndOf="parent">
 
         <View
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_online_dot"
+                android:layout_width="40dp"
+                android:layout_height="32dp"
+                android:background="@drawable/online_static"
                 android:layout_marginEnd="8dp"/>
 
         <TextView
                 android:id="@+id/online_counter_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="124dp"
+                android:layout_height="19dp"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                tools:text="Онлайн: 1,240"/>
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                tools:text="@string/unknown_online_count"/>
     </LinearLayout>
 
-    <!-- Нижняя панель с версией, профилем и кнопкой Play -->
+
     <LinearLayout
             android:id="@+id/side_menu_layout"
             android:layout_width="153dp"
-            android:layout_height="139dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:orientation="vertical"
-            android:padding="4dp"
-            android:gravity="bottom"
+            android:padding="2dp"
             android:background="#88000000"
-            app:layout_constraintTop_toBottomOf="@id/app_logo"
+            app:layout_constraintTop_toBottomOf="@id/_background_header_view"
             app:layout_constraintBottom_toTopOf="@id/_background_display_view"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="4dp"
-            app:layout_constraintVertical_bias="0.494">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.047">
 
         <com.kdt.mcgui.LauncherMenuButton
                 android:id="@+id/custom_control_button"
@@ -99,7 +94,6 @@
                 android:drawableStart="@drawable/ic_px_gamepad"
                 android:text="@string/mcl_option_customcontrol"/>
 
-        <!-- Кнопка открытия параметров/инструментов (вместо раскиданных логов и файлов) -->
         <com.kdt.mcgui.LauncherMenuButton
                 android:id="@+id/settings_submenu_button"
                 style="@style/LauncherMenuButton.Universal"
@@ -107,87 +101,126 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_px_sliders"
                 android:text="@string/mcl_options"/>
-
     </LinearLayout>
-    <View
-        android:id="@+id/_background_display_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/background_bottom_bar"
-        android:translationZ="-1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@id/play_button" />
 
-    <com.kdt.mcgui.mcVersionSpinner
-        android:id="@+id/mc_version_spinner"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_32sdp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="12dp"
-        android:background="@android:color/transparent"
-        android:drawableEnd="@drawable/spinner_arrow"
-        app:drawableEndPadding="@dimen/_1sdp"
-        app:drawableEndSize="@dimen/_12sdp"
-        app:drawableStartIntegerScaling="true"
-        app:drawableStartSize="@dimen/_36sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/edit_profile_button"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
-        android:id="@+id/edit_profile_button"
-        android:layout_width="@dimen/_32sdp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:src="@drawable/ic_px_edit"
-        app:layout_constraintBottom_toBottomOf="@+id/mc_version_spinner"
-        app:layout_constraintEnd_toStartOf="@+id/play_button"
-        app:layout_constraintTop_toTopOf="@+id/mc_version_spinner" />
-
-    <com.kdt.mcgui.MineButton
-        android:id="@+id/play_button"
-        android:layout_width="180dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/main_play"
-        android:textAllCaps="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
     <LinearLayout
             android:id="@+id/side_socials_layout"
-            android:layout_width="169dp"
-            android:layout_height="126dp"
-            android:orientation="vertical"
-            android:padding="4dp"
-            android:gravity="center"
+            android:layout_width="154dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="568dp"
+            android:orientation="horizontal"
+            android:padding="2dp"
             android:background="#88000000"
+            app:layout_constraintTop_toBottomOf="@id/_background_header_view"
             app:layout_constraintBottom_toTopOf="@id/_background_display_view"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="560dp" app:layout_constraintVertical_bias="0.606"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.669">
 
-        <com.kdt.mcgui.LauncherMenuButton
+        <LinearLayout
                 android:id="@+id/discord_button"
-                style="@style/LauncherMenuButton.Universal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:drawableStart="@drawable/ic_discord"
-                android:text="@string/cm2_discord"/>
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:background="@color/background_bottom_bar"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-        <com.kdt.mcgui.LauncherMenuButton
+            <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginBottom="4dp"
+                    android:src="@drawable/ic_discord"
+                    android:scaleType="fitCenter"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cm2_discord"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"/>
+        </LinearLayout>
+        <LinearLayout
                 android:id="@+id/social_media_button"
-                style="@style/LauncherMenuButton.Universal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:drawableStart="@drawable/ic_telegram"
-                android:text="@string/cm2_telegram"/>
+                android:layout_weight="1"
+                android:background="@color/background_bottom_bar"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-        <!-- Кнопка открытия параметров/инструментов (вместо раскиданных логов и файлов) -->
+            <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginBottom="4dp"
+                    android:src="@drawable/ic_telegram"
+                    android:scaleType="fitCenter"/>
 
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cm2_telegram"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"/>
+        </LinearLayout>
     </LinearLayout>
+    <View
+            android:id="@+id/_background_display_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/background_bottom_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/play_button"/>
+
+    <LinearLayout
+            android:id="@+id/version_controls_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:background="@color/background_bottom_bar"
+            app:layout_constraintBottom_toBottomOf="@id/play_button"
+            app:layout_constraintTop_toTopOf="@id/play_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/play_button">
+
+        <com.kdt.mcgui.mcVersionSpinner
+                android:id="@+id/mc_version_spinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:drawableEnd="@drawable/spinner_arrow"
+                app:drawableEndPadding="@dimen/_1sdp"
+                app:drawableEndSize="@dimen/_12sdp"
+                app:drawableStartIntegerScaling="true"
+                app:drawableStartSize="@dimen/_36sdp"/>
+
+        <ImageButton
+                android:id="@+id/edit_profile_button"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_px_edit"/>
+    </LinearLayout>
+
+    <com.kdt.mcgui.MineButton
+            android:id="@+id/play_button"
+            android:layout_width="262dp"
+            android:layout_height="51dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/main_play"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
