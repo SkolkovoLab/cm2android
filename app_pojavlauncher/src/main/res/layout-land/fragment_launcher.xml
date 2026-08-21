@@ -95,7 +95,7 @@
                 android:text="@string/mcl_option_customcontrol"/>
 
         <com.kdt.mcgui.LauncherMenuButton
-                android:id="@+id/settings_submenu_button"
+                android:id="@+id/setting_button"
                 style="@style/LauncherMenuButton.Universal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
