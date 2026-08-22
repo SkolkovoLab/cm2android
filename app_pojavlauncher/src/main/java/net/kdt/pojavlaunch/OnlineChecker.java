@@ -1,4 +1,4 @@
-package net.kdt.pojavlaunch; // Укажите свой пакет (package)
+package net.kdt.pojavlaunch; 
 
 import android.os.Handler;
 import android.os.Looper;
