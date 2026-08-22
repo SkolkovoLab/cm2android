@@ -34,17 +34,25 @@ public class LauncherMenuButton extends ExtendedButton {
     private void setSettings(){
         Resources resources = getContext().getResources();
 
-        int padding = resources.getDimensionPixelSize(R.dimen._22sdp);
+        int padding = resources.getDimensionPixelSize(R.dimen.launcher_menu_button_padding);
         setCompoundDrawablePadding(padding);
-        setPaddingRelative(padding, 0, 0, 0);
-        setGravity(Gravity.CENTER_VERTICAL);
+
+        int iconSize = resources.getDimensionPixelSize(R.dimen._30sdp);
+        int[] sizes = getExtendedViewData().getSizeCompounds();
+        boolean stackedVertically = getCompoundDrawables()[1] != null;
+        if (stackedVertically) {
+            sizes[1] = iconSize;
+            setPadding(padding, padding, padding, padding);
+            setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        } else {
+            sizes[0] = iconSize;
+            setPaddingRelative(padding, 0, 0, 0);
+            setGravity(Gravity.CENTER_VERTICAL);
+        }
+        getExtendedViewData().setSizeCompounds(sizes);
 
         setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimensionPixelSize(R.dimen._12ssp));
 
-        // Set drawable size
-        int[] sizes = getExtendedViewData().getSizeCompounds();
-        sizes[0] = resources.getDimensionPixelSize(R.dimen._30sdp);
-        getExtendedViewData().setSizeCompounds(sizes);
         postProcessDrawables();
     }
 }

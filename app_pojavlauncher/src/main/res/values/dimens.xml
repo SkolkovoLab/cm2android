@@ -31,4 +31,5 @@
     <dimen name="fragment_padding_medium">@dimen/_10sdp</dimen>
     <!-- Misc paddings -->
     <dimen name="profile_editor_image_padding">@dimen/padding_small</dimen>
+    <dimen name="launcher_menu_button_padding">@dimen/_22sdp</dimen>
 </resources>
