@@ -39,24 +39,10 @@
             android:src="@drawable/logo"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/_background_header_view"
-            app:layout_constraintEnd_toStartOf="@id/setting_button"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/online_counter_layout" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/_background_header_view"
-            app:layout_constraintWidth_max="150dp" app:layout_constraintHorizontal_bias="0.267"
+            app:layout_constraintWidth_max="150dp" app:layout_constraintHorizontal_bias="0.09"
             app:layout_constraintVertical_bias="0.38"/>
-    <ImageButton
-            android:id="@+id/setting_button"
-            android:layout_width="68dp"
-            android:layout_height="55dp"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/mcl_options"
-            android:padding="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_px_sliders"
-            app:layout_constraintBottom_toBottomOf="@id/_background_header_view"
-            app:layout_constraintEnd_toStartOf="@id/online_counter_layout"
-            app:layout_constraintTop_toTopOf="@id/_background_header_view" android:layout_marginEnd="4dp"
-            app:layout_constraintVertical_bias="0.733"/>
     <LinearLayout
         android:id="@+id/online_counter_layout"
         android:layout_width="wrap_content"
@@ -110,6 +96,15 @@
             android:background="#88000000"
             android:orientation="vertical"
             android:padding="4dp">
+
+            <com.kdt.mcgui.LauncherMenuButton
+                android:id="@+id/setting_button"
+                style="@style/LauncherMenuButton.Universal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:drawableStart="@drawable/ic_px_sliders"
+                android:text="@string/mcl_options" />
 
             <com.kdt.mcgui.LauncherMenuButton
                 android:id="@+id/custom_control_button"
